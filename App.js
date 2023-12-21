@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { AppState } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createMaterialBottomTabNavigator } from "react-native-paper/react-navigation";
@@ -24,22 +24,23 @@ import { useFonts } from "expo-font";
 
 import LoginKey from "./navigation/LoginKey";
 
+//FOr SplashScreen
+import * as SplashScreen from "expo-splash-screen";
+import * as Font from "expo-font";
+
+let fonts = {
+  "nunito-sans": require("./assets/fonts/NunitoSans_7pt-Regular.ttf"),
+  "nunito-sans-italic": require("./assets/fonts/NunitoSans_7pt-Italic.ttf"),
+  "nunito-sans-bold": require("./assets/fonts/NunitoSans_10pt-Bold.ttf"),
+};
+
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
+
 export default function App() {
   const [showLogin, setShowLogin] = useState(true);
-  const [fontsLoaded] = useFonts({
-    "nunito-sans": require("./assets/fonts/NunitoSans_7pt-Regular.ttf"),
-    "nunito-sans-italic": require("./assets/fonts/NunitoSans_7pt-Italic.ttf"),
-    "nunito-sans-bold": require("./assets/fonts/NunitoSans_10pt-Bold.ttf"),
-  });
-  // const onLayoutRootView = useCallback(async () => {
-  //   if (fontsLoaded) {
-  //     await SplashScreen.hideAsync();
-  //   }
-  // }, [fontsLoaded]);
 
-  // if (!fontsLoaded) {
-  //   return null;
-  // }
+  const [appIsReady, setAppIsReady] = useState(false);
   const [credentials, setCredentials] = useState([]);
   const [sessionLogs, setSessionLogs] = useState([]);
   const [mainKey, setMainKey] = useState("");
@@ -241,14 +242,16 @@ export default function App() {
     const handleAppStateChange = (nextAppState) => {
       if (
         appState.current.match(/inactive|background/) &&
-        nextAppState === "active"
+        nextAppState === "active" &&
+        loginKey.length !== 0
       ) {
         // App came to the foreground (user opened the app)
 
         logSession("App was opened from the background.");
       } else if (
         appState.current === "active" &&
-        nextAppState.match(/inactive|background/)
+        nextAppState.match(/inactive|background/) &&
+        loginKey.length !== 0
       ) {
         // App went to the background (user closed the app or switched to another app)
         logSession("App was closed.");
@@ -269,6 +272,25 @@ export default function App() {
   }, []);
 
   const [isShowNav, setIsShowNav] = useState(false);
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        // Pre-load fonts, make any API calls you need to do here
+        await Font.loadAsync(fonts);
+        console.log("trying..");
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        // Tell the application to render
+        console.log("done");
+        setAppIsReady(true);
+        await SplashScreen.hideAsync();
+      }
+    }
+
+    prepare();
+  }, []);
 
   return (
     <PaperProvider>
@@ -296,14 +318,18 @@ export default function App() {
           handleAfterMainKeyChange,
         }}
       >
-        {mainKey.length === 0 ? (
-          <MainKey />
-        ) : showLogin ? (
-          <LoginKey />
-        ) : (
-          <NavigationContainer>
-            <MainNavigation />
-          </NavigationContainer>
+        {appIsReady && (
+          <>
+            {mainKey.length === 0 ? (
+              <MainKey />
+            ) : showLogin ? (
+              <LoginKey />
+            ) : (
+              <NavigationContainer>
+                <MainNavigation />
+              </NavigationContainer>
+            )}
+          </>
         )}
       </Application.Provider>
     </PaperProvider>

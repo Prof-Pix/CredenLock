@@ -15,7 +15,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 
 const CreateAccount = ({ navigation }) => {
   const context = useContext(Application);
-  const { theme } = context;
+  const { theme, logSession } = context;
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -68,6 +68,7 @@ const CreateAccount = ({ navigation }) => {
       const dateAdded = getCurrentDateFormatted();
       handleCredentials(newLabel, newEmail, newPass, description, dateAdded);
       setIsSuccessAdd(true);
+      logSession("A credential was added.");
     }
   };
 
@@ -82,11 +83,15 @@ const CreateAccount = ({ navigation }) => {
         flex: 1,
         backgroundColor:
           theme == "light" ? themes.light.neutral : themes.dark.neutral,
-        marginTop: 9,
       }}
     >
       <View
-        style={{ rowGap: 10, justifyContent: "center", marginHorizontal: 20 }}
+        style={{
+          rowGap: 10,
+          justifyContent: "center",
+          marginHorizontal: 20,
+          marginTop: 9,
+        }}
       >
         <View>
           <Text

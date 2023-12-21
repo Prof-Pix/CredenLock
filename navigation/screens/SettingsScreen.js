@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import * as SplashScreen from "expo-splash-screen";
 import Application from "../../context/ApplicationContext";
 import { Button, TextInput, Portal, Dialog } from "react-native-paper";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -85,6 +84,18 @@ const ResetKey = ({ navigation }) => {
   const [hasSymbol, setHasSymbol] = useState(false);
   const [hasMinLength, setHasMinLength] = useState(false);
 
+  //For Checking of the old main key
+  const [isOldMKIncorrect, setisOldMKIncorrect] = useState(false);
+
+  const checkOldMainKey = () => {
+    if (oldKey !== mainKey) {
+      setisOldMKIncorrect(true);
+      return false;
+    }
+    setisOldMKIncorrect(false);
+    return true;
+  };
+
   const handleChangeKeyEntered = (key) => {
     setChangePass(key);
     setHasLowerCase(/[a-z]/.test(key));
@@ -96,24 +107,28 @@ const ResetKey = ({ navigation }) => {
 
   const handleSubmit = () => {
     if (handleVerifyCredentials()) {
-      if (
-        oldKey == mainKey &&
-        changePass == confirmPass &&
-        oldKey &&
-        changePass
-      ) {
-        const passwordRegex =
-          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/;
+      // to check first if the text input has content
+      if (checkOldMainKey()) {
+        // check if the old main key entered and the main key matches {
+        if (
+          oldKey == mainKey &&
+          changePass == confirmPass &&
+          oldKey &&
+          changePass
+        ) {
+          const passwordRegex =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/;
 
-        const isValid = passwordRegex.test(changePass) && hasMinLength;
-        if (!isValid) {
-          setInvalidPass(true);
-          setTimeout(() => setInvalidPass(false), 1500);
-        } else {
-          setInvalidPass(false);
-          handleMainKey(changePass);
-          logSession("Someone changed the main key.");
-          setIsSuccessChange(true);
+          const isValid = passwordRegex.test(changePass) && hasMinLength;
+          if (!isValid) {
+            setInvalidPass(true);
+            setTimeout(() => setInvalidPass(false), 1500);
+          } else {
+            setInvalidPass(false);
+            handleMainKey(changePass);
+            logSession("Someone changed the main key.");
+            setIsSuccessChange(true);
+          }
         }
       }
     }
@@ -188,25 +203,18 @@ const ResetKey = ({ navigation }) => {
               }}
             >
               <MaterialCommunityIcons
-                color={
-                  errors.old || (oldKey !== mainKey && oldKey)
-                    ? "#FF0000"
-                    : themes.light.neutral
-                }
+                color={errors.old ? "#FF0000" : themes.light.neutral}
                 name="alert-circle"
                 size={16}
               />
               <Text
                 style={{
-                  color:
-                    errors.old || (oldKey !== mainKey && oldKey)
-                      ? "#FF0000"
-                      : themes.light.neutral,
+                  color: errors.old ? "#FF0000" : themes.light.neutral,
                   fontSize: 12,
                   fontFamily: "nunito-sans",
                 }}
               >
-                {errors.old ? errors.old : "Old key entered is incorrect"}
+                {errors.old ? errors.old : ""}
               </Text>
             </View>
           </View>
@@ -309,7 +317,7 @@ const ResetKey = ({ navigation }) => {
               >
                 {errors.confirm
                   ? errors.confirm
-                  : "Invalid action to confirm new main key."}
+                  : "Please enter the same new main key to confirm."}
               </Text>
             </View>
           </View>
@@ -511,6 +519,31 @@ const ResetKey = ({ navigation }) => {
             </Dialog.Actions>
           </Dialog>
         </Portal>
+
+        <Portal>
+          <Dialog visible={isOldMKIncorrect}>
+            <Dialog.Title
+              style={{ textAlign: "center", fontFamily: "nunito-sans-bold" }}
+            >
+              Invalid Action!
+            </Dialog.Title>
+            <Dialog.Content style={{ textAlign: "center" }}>
+              <Text
+                style={{
+                  textAlign: "center",
+                  color: "#FF0000",
+                  fontFamily: "nunito-sans-italic",
+                }}
+              >
+                *Old Main Key entered is incorrect!*
+              </Text>
+            </Dialog.Content>
+
+            <Dialog.Actions>
+              <Button onPress={() => setisOldMKIncorrect(false)}>Close</Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
       </View>
     </View>
   );
@@ -540,7 +573,7 @@ const SettingsScreen = ({ navigation }) => {
           CredenLock
         </Text>
         <Text style={{ fontStyle: "italic", marginBottom: 8 }}>
-          by rhem giou salvador
+          by drpixels
         </Text>
         <View
           style={{
@@ -578,6 +611,126 @@ const SettingsScreen = ({ navigation }) => {
             passwords, ensuring that you never forget or compromise your login
             credentials again.
           </Text>
+          <View
+            style={{
+              backgroundColor: "white",
+              marginTop: 20,
+              padding: 25,
+              borderRadius: 2,
+              backgroundColor: themes.light.text,
+            }}
+          >
+            <Text
+              style={{
+                color: theme == "light" ? themes.light.action : "black",
+                textAlign: "justify",
+                lineHeight: 25,
+                fontSize: 13,
+                fontFamily: "nunito-sans-italic",
+              }}
+            >
+              {`For more feature suggestions, you may contact the developer. `}
+            </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                columnGap: 4,
+              }}
+            >
+              <MaterialCommunityIcons
+                style={{ color: "#1877F2" }}
+                name="facebook"
+                size={16}
+              />
+              <Text
+                style={{
+                  color: theme == "light" ? themes.light.action : "black",
+                  textAlign: "justify",
+                  lineHeight: 25,
+                  fontSize: 13,
+                  fontFamily: "nunito-sans-bold",
+                }}
+              >
+                {`Rhem Giou Salvador`}
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                columnGap: 4,
+              }}
+            >
+              <MaterialCommunityIcons
+                style={{
+                  color: "#d62976",
+                }}
+                name="instagram"
+                size={16}
+              />
+              <Text
+                style={{
+                  color: theme == "light" ? themes.light.action : "black",
+                  textAlign: "justify",
+                  lineHeight: 25,
+                  fontSize: 13,
+                  fontFamily: "nunito-sans-bold",
+                }}
+              >
+                {`_rhemmm`}
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                columnGap: 4,
+              }}
+            >
+              <MaterialCommunityIcons
+                style={{ color: "#1DA1F2" }}
+                name="twitter"
+                size={16}
+              />
+              <Text
+                style={{
+                  color: theme == "light" ? themes.light.action : "black",
+                  textAlign: "justify",
+                  lineHeight: 25,
+                  fontSize: 13,
+                  fontFamily: "nunito-sans-bold",
+                }}
+              >
+                {`@giouuuu`}
+              </Text>
+            </View>
+
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                columnGap: 4,
+              }}
+            >
+              <MaterialCommunityIcons
+                style={{ color: "#c71610" }}
+                name="gmail"
+                size={16}
+              />
+              <Text
+                style={{
+                  color: theme == "light" ? themes.light.action : "black",
+                  textAlign: "justify",
+                  lineHeight: 25,
+                  fontSize: 13,
+                  fontFamily: "nunito-sans-bold",
+                }}
+              >
+                {`giousalvador@gmail.com`}
+              </Text>
+            </View>
+          </View>
         </View>
         <View style={{ marginTop: 30 }}>
           <Button
@@ -598,18 +751,6 @@ const SettingsScreen = ({ navigation }) => {
     </SafeAreaView>
   );
 };
-
-// const styles = StyleSheet.create({
-//   title: {
-//     fontFamily: "nunito-sans-bold",
-//   },
-//   creator: {
-//     fontFamily: "nunito-sans-italic",
-//   },
-//   description: {
-//     fontFamily: "nunito-sans",
-//   },
-// });
 
 const styles = StyleSheet.create({
   criteriaWrapper: {
