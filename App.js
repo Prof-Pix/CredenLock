@@ -115,7 +115,7 @@ export default function App() {
   const [description, setDescription] = useState("");
 
   //For Session Log
-  const logSession = async (action) => {
+  const logSession = async (action, keyAction, valueModified) => {
     try {
       let updatedSessionLogs;
       const timeStamp = new Date().toLocaleString("en-US", {
@@ -126,7 +126,19 @@ export default function App() {
         minute: "2-digit",
         second: "2-digit",
       });
-      const newLog = { timeStamp, action };
+
+      let newLog;
+      if (keyAction == "Delete" || keyAction == "Edit") {
+        newLog = { timeStamp, action, keyAction, valueModified };
+      } else {
+        newLog = {
+          timeStamp,
+          action,
+          keyAction: undefined,
+          valueModified: undefined,
+        };
+      }
+
       setSessionLogs((prevSession) => {
         updatedSessionLogs = prevSession || [];
         return [newLog, ...prevSession];
@@ -142,7 +154,8 @@ export default function App() {
 
   const handleEditCredentials = async (
     id,
-    { labelToEdit, emailToEdit, passToEdit, descToEdit, dateModified }
+    { labelToEdit, emailToEdit, passToEdit, descToEdit, dateModified },
+    modDetails
   ) => {
     const editedCreden = credentials.map((credential) =>
       credential.id === id
@@ -168,7 +181,7 @@ export default function App() {
     } catch (error) {
       console.error("Error storing data:", error);
     }
-    logSession("A credential information was changed.");
+    logSession("A credential information was changed.", "Edit", modDetails);
   };
 
   const handleCredentials = async (
@@ -208,7 +221,7 @@ export default function App() {
     setDescription("");
   };
 
-  const handleDeleteCredentials = async (credential) => {
+  const handleDeleteCredentials = async (credential, credToDelete) => {
     setCredentials(credential);
 
     try {
@@ -217,7 +230,7 @@ export default function App() {
     } catch (error) {
       console.error("Error storing dataa:", error);
     }
-    logSession("A credential was deleted.");
+    logSession("A credential was deleted.", "Delete", credToDelete);
   };
 
   const handleNewLabel = (newLabel) => {
@@ -236,41 +249,6 @@ export default function App() {
     setDescription(newDescripCred);
   };
 
-  const appState = useRef(AppState.currentState);
-
-  useEffect(() => {
-    const handleAppStateChange = (nextAppState) => {
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === "active" &&
-        loginKey.length !== 0
-      ) {
-        // App came to the foreground (user opened the app)
-
-        logSession("App was opened from the background.");
-      } else if (
-        appState.current === "active" &&
-        nextAppState.match(/inactive|background/) &&
-        loginKey.length !== 0
-      ) {
-        // App went to the background (user closed the app or switched to another app)
-        logSession("App was closed.");
-      }
-
-      appState.current = nextAppState;
-    };
-    // Subscribe to app state changes
-    const subscription = AppState.addEventListener(
-      "change",
-      handleAppStateChange
-    );
-
-    // Clean up the subscription when the component unmounts
-    return () => {
-      subscription.remove();
-    };
-  }, []);
-
   const [isShowNav, setIsShowNav] = useState(false);
 
   useEffect(() => {
@@ -278,12 +256,10 @@ export default function App() {
       try {
         // Pre-load fonts, make any API calls you need to do here
         await Font.loadAsync(fonts);
-        console.log("trying..");
       } catch (e) {
         console.warn(e);
       } finally {
         // Tell the application to render
-        console.log("done");
         setAppIsReady(true);
         await SplashScreen.hideAsync();
       }

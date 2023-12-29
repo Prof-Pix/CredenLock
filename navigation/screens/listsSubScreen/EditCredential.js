@@ -12,9 +12,6 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { HelperText } from "react-native-paper";
 import * as Clipboard from "expo-clipboard";
 
-//For Reseting the Navigation
-import { useResetNavigation } from "../../../utilities/utils";
-
 //For Importing Application Context
 import Application from "../../../context/ApplicationContext";
 
@@ -40,12 +37,49 @@ const EditCredential = ({ route, navigation }) => {
   const [isChanged, setIsChanged] = useState(false);
   const [isSure, setIsSure] = useState(false);
 
+  const [modDetails, setModDetails] = useState({
+    label: undefined,
+    email: undefined,
+    pass: undefined,
+    desc: undefined,
+  });
+
   useEffect(() => {
+    const labelHasChanged = labelToEdit !== label;
+    const emailHasChanged = emailToEdit !== email;
+    const passHasChanged = passToEdit !== pass;
+    const descHasChanged = descToEdit !== description;
+
     const checkChange =
-      labelToEdit !== label ||
-      emailToEdit !== email ||
-      passToEdit !== pass ||
-      descToEdit !== description;
+      labelHasChanged || emailHasChanged || passHasChanged || descHasChanged;
+
+    if (labelHasChanged) {
+      setModDetails({
+        ...modDetails,
+        label: { oldLabel: label, newLabel: labelToEdit },
+      });
+    }
+
+    if (emailHasChanged) {
+      setModDetails({
+        ...modDetails,
+        email: { oldLabel: label },
+      });
+    }
+
+    if (passHasChanged) {
+      setModDetails({
+        ...modDetails,
+        pass: { oldLabel: label },
+      });
+    }
+
+    if (descHasChanged) {
+      setModDetails({
+        ...modDetails,
+        desc: { oldLabel: label },
+      });
+    }
 
     setIsChanged(checkChange);
   }, [labelToEdit, emailToEdit, passToEdit, descToEdit]);
@@ -109,13 +143,17 @@ const EditCredential = ({ route, navigation }) => {
     if (handleVerifyCredentials() && enteredPass == mainKey) {
       const dateModified = getCurrentDateFormatted();
 
-      handleEditCredentials(ID_CRED_TO_ACCESS, {
-        labelToEdit,
-        emailToEdit,
-        passToEdit,
-        descToEdit,
-        dateModified,
-      });
+      handleEditCredentials(
+        ID_CRED_TO_ACCESS,
+        {
+          labelToEdit,
+          emailToEdit,
+          passToEdit,
+          descToEdit,
+          dateModified,
+        },
+        modDetails
+      );
       setIsShowDialog(false);
       setIsShowSuccessDialog(true);
       return;

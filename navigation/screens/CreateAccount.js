@@ -68,7 +68,7 @@ const CreateAccount = ({ navigation }) => {
       const dateAdded = getCurrentDateFormatted();
       handleCredentials(newLabel, newEmail, newPass, description, dateAdded);
       setIsSuccessAdd(true);
-      logSession("A credential was added.");
+      logSession("A credential was added.", "", "");
     }
   };
 

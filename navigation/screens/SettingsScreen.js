@@ -554,7 +554,7 @@ const SettingsScreen = ({ navigation }) => {
   const { themes, theme } = context;
 
   return (
-    <SafeAreaView
+    <View
       style={{
         marginTop: StatusBar.currentHeight,
         flex: 1,
@@ -562,7 +562,7 @@ const SettingsScreen = ({ navigation }) => {
           theme == "light" ? themes.light.neutral : themes.dark.neutral,
       }}
     >
-      <View style={{ marginHorizontal: 20 }}>
+      <View style={{ marginHorizontal: 20, marginTop: 20 }}>
         <Text
           style={{
             fontFamily: "nunito-sans-bold",
@@ -748,7 +748,7 @@ const SettingsScreen = ({ navigation }) => {
           </Button>
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

@@ -6,7 +6,6 @@ import { Button, Divider } from "react-native-paper";
 import { createStackNavigator } from "@react-navigation/stack";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { useResetNavigation } from "../../utilities/utils";
 import { themes } from "../../theme/theme";
 
 const Stack = createStackNavigator();
@@ -202,6 +201,11 @@ const FilteredSessionLogs = () => {
                   >
                     {item.action}
                   </Text>
+                  <Text style={{ marginLeft: 15, fontFamily: "nunito-sans" }}>
+                    {item.keyAction == "Delete"
+                      ? `\nCredential Label: ${item.valueModified}\n`
+                      : ""}
+                  </Text>
                 </View>
                 <Divider />
               </View>
@@ -327,10 +331,310 @@ const SessionLogs = ({ navigation }) => {
                   {item.timeStamp}
                 </Text>
                 <Text
-                  style={{ marginLeft: 15, fontFamily: "nunito-sans-italic" }}
+                  style={{
+                    marginLeft: 15,
+                    fontFamily: "nunito-sans-italic",
+                    marginBottom: 5,
+                  }}
                 >
                   {item.action}
                 </Text>
+                {item.valueModified && item.keyAction == "Delete" && (
+                  <View
+                    style={{
+                      backgroundColor: themes.light.text,
+                      paddingVertical: 8,
+                      flexDirection: "row",
+                      borderRadius: 5,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        marginLeft: 15,
+                        fontFamily: "nunito-sans-bold",
+                        color: themes.light.action,
+                      }}
+                    >
+                      {`Credential Label: `}
+                    </Text>
+                    <Text
+                      style={{
+                        fontFamily: "nunito-sans",
+                        color: themes.light.action,
+                      }}
+                    >
+                      {`${item.valueModified}`}
+                    </Text>
+                  </View>
+                )}
+                {item.valueModified && item.keyAction == "Edit" && (
+                  <>
+                    {item.valueModified.label && (
+                      <View
+                        style={{
+                          marginBottom: 5,
+                          backgroundColor: themes.light.text,
+
+                          paddingBottom: 8,
+
+                          borderRadius: 5,
+                        }}
+                      >
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            backgroundColor: themes.light.text,
+                            paddingVertical: 8,
+                            borderRadius: 5,
+                          }}
+                        >
+                          <Text
+                            style={{
+                              marginLeft: 20,
+                              fontFamily: "nunito-sans-bold",
+                              color: themes.light.action,
+                            }}
+                          >
+                            {`Old Label: `}
+                          </Text>
+                          <Text
+                            style={{
+                              fontFamily: "nunito-sans",
+
+                              color: themes.light.action,
+                            }}
+                          >{`${item.valueModified.label.oldLabel}`}</Text>
+                        </View>
+
+                        <View style={{ flexDirection: "row" }}>
+                          <Text
+                            style={{
+                              marginLeft: 20,
+                              fontFamily: "nunito-sans-bold",
+
+                              color: themes.light.action,
+                            }}
+                          >
+                            {`Modified Label: `}
+                          </Text>
+                          <Text
+                            style={{
+                              fontFamily: "nunito-sans",
+
+                              color: themes.light.action,
+                            }}
+                          >{`${item.valueModified.label.newLabel}`}</Text>
+                        </View>
+                      </View>
+                    )}
+                    {item.valueModified.label &&
+                      (item.valueModified.email ||
+                        item.valueModified.pass ||
+                        item.valueModified.desc) && (
+                        <View
+                          style={{
+                            marginBottom: 5,
+                            backgroundColor: themes.light.text,
+                            paddingVertical: 8,
+
+                            borderRadius: 5,
+                          }}
+                        >
+                          {item.valueModified.email && (
+                            <View style={{ marginBottom: 5 }}>
+                              <View>
+                                <Text
+                                  style={{
+                                    marginLeft: 20,
+                                    fontFamily: "nunito-sans-italic",
+                                    fontSize: 12,
+                                    color: themes.light.action,
+                                  }}
+                                >{`The email/username of this credential was also modified.`}</Text>
+                              </View>
+                            </View>
+                          )}
+                          {item.valueModified.pass && (
+                            <View style={{ marginBottom: 5 }}>
+                              <View>
+                                <Text
+                                  style={{
+                                    marginLeft: 20,
+                                    fontFamily: "nunito-sans-italic",
+                                    fontSize: 12,
+                                    color: themes.light.action,
+                                  }}
+                                >{`The password of this credential was also modified.`}</Text>
+                              </View>
+                            </View>
+                          )}
+                          {item.valueModified.desc && (
+                            <View style={{ marginBottom: 5 }}>
+                              <View>
+                                <Text
+                                  style={{
+                                    marginLeft: 20,
+                                    fontFamily: "nunito-sans-italic",
+                                    fontSize: 12,
+                                    color: themes.light.action,
+                                  }}
+                                >{`The description of this credential was also modified.`}</Text>
+                              </View>
+                            </View>
+                          )}
+                        </View>
+                      )}
+
+                    {!item.valueModified.label &&
+                      (item.valueModified.email ||
+                        item.valueModified.pass ||
+                        item.valueModified.desc) && (
+                        <View
+                          style={{
+                            marginBottom: 5,
+                            backgroundColor: themes.light.text,
+
+                            paddingVertical: 8,
+
+                            borderRadius: 5,
+                          }}
+                        >
+                          <View style={{ marginBottom: 5 }}>
+                            <View style={{ flexDirection: "row" }}>
+                              <Text
+                                style={{
+                                  marginLeft: 20,
+                                  fontFamily: "nunito-sans-bold",
+                                  color: themes.light.action,
+                                }}
+                              >
+                                {`Label: `}
+                              </Text>
+                              <Text
+                                style={{
+                                  color: themes.light.action,
+                                  fontFamily: "nunito-sans",
+                                }}
+                              >
+                                {item.valueModified.email
+                                  ? `${item.valueModified.email.oldLabel}`
+                                  : item.valueModified.pass
+                                  ? `${item.valueModified.pass.oldLabel}`
+                                  : `${item.valueModified.desc.oldLabel}`}
+                              </Text>
+                            </View>
+                          </View>
+                          {item.valueModified.email && (
+                            <View style={{ marginBottom: 5 }}>
+                              <View>
+                                <Text
+                                  style={{
+                                    marginLeft: 30,
+                                    color: themes.light.action,
+                                    fontFamily: "nunito-sans-italic",
+                                    fontSize: 12,
+                                  }}
+                                >{`The email/username of this credential was modified.`}</Text>
+                              </View>
+                            </View>
+                          )}
+                          {item.valueModified.pass && (
+                            <View style={{ marginBottom: 5 }}>
+                              <View>
+                                <Text
+                                  style={{
+                                    marginLeft: 30,
+                                    color: themes.light.action,
+                                    fontFamily: "nunito-sans-italic",
+                                    fontSize: 12,
+                                  }}
+                                >{`The password of this credential was modified.`}</Text>
+                              </View>
+                            </View>
+                          )}
+                          {item.valueModified.desc && (
+                            <View style={{ marginBottom: 5 }}>
+                              <View>
+                                <Text
+                                  style={{
+                                    marginLeft: 40,
+                                    color: themes.light.action,
+                                    fontFamily: "nunito-sans-italic",
+                                    fontSize: 12,
+                                  }}
+                                >{`The description of this credential was modified.`}</Text>
+                              </View>
+                            </View>
+                          )}
+                        </View>
+                      )}
+
+                    {/* {item.valueModified.email && (
+                      <View style={{ marginBottom: 5 }}>
+                        <View style={{ flexDirection: "row" }}>
+                          <Text
+                            style={{
+                              marginLeft: 20,
+                              fontFamily: "nunito-sans-bold",
+                            }}
+                          >
+                            {`Label:`}
+                          </Text>
+                          <Text>{`${item.valueModified.email.oldLabel}`}</Text>
+                        </View>
+
+                        <View>
+                          <Text
+                            style={{ marginLeft: 56 }}
+                          >{`The email/username of this credential was modified.`}</Text>
+                        </View>
+                      </View>
+                    )}
+
+                    {item.valueModified.pass && (
+                      <View style={{ marginBottom: 5 }}>
+                        <View style={{ flexDirection: "row" }}>
+                          <Text
+                            style={{
+                              marginLeft: 20,
+                              fontFamily: "nunito-sans-bold",
+                            }}
+                          >
+                            {`Label:`}
+                          </Text>
+                          <Text>{`${item.valueModified.pass.oldLabel}`}</Text>
+                        </View>
+
+                        <View>
+                          <Text
+                            style={{ marginLeft: 56 }}
+                          >{`The password of this credential was modified.`}</Text>
+                        </View>
+                      </View>
+                    )}
+                    {item.valueModified.desc && (
+                      <View style={{ marginBottom: 5 }}>
+                        <View style={{ flexDirection: "row" }}>
+                          <Text
+                            style={{
+                              marginLeft: 20,
+                              fontFamily: "nunito-sans-bold",
+                            }}
+                          >
+                            {`Label:`}
+                          </Text>
+                          <Text>{`${item.valueModified.desc.oldLabel}`}</Text>
+                        </View>
+
+                        <View>
+                          <Text
+                            style={{ marginLeft: 56 }}
+                          >{`The description of this credential was modified.`}</Text>
+                        </View>
+                      </View>
+                    )} */}
+                  </>
+                )}
               </View>
               <Divider />
             </View>

@@ -5,9 +5,6 @@ import { Dialog, Button, TouchableRipple, Portal } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Clipboard from "expo-clipboard";
 
-//For Reseting the Navigation
-import { useResetNavigation } from "../../../utilities/utils";
-
 //For Importing Application Context
 import Application from "../../../context/ApplicationContext";
 import { useFonts } from "expo-font";

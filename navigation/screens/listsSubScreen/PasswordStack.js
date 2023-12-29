@@ -12,9 +12,6 @@ import {
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 
-//For Reseting the Navigation
-import { useResetNavigation } from "../../../utilities/utils";
-
 //For Importing Application Context
 import Application from "../../../context/ApplicationContext";
 

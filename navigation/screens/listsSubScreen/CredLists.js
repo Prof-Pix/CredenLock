@@ -12,9 +12,6 @@ import {
 } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-//For Reseting the Navigation
-import { useResetNavigation } from "../../../utilities/utils";
-
 //For Importing Application Context
 import Application from "../../../context/ApplicationContext";
 
@@ -95,7 +92,7 @@ const CredLists = ({ navigation }) => {
       const tempCredentials = credentials.filter((credential) => {
         return credential.id != credID;
       });
-      handleDeleteCredentials(tempCredentials);
+      handleDeleteCredentials(tempCredentials, credToDelete);
       setIsDeleting(false);
       setContDelete(false);
       setIsShowPass(false);

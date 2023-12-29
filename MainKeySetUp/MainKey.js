@@ -40,6 +40,16 @@ const MainKey = () => {
     setHasMinLength(key.length >= 8);
   };
 
+  const debounce = (func, delay) => {
+    let timer;
+    return function (...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => func.apply(this, args), delay);
+    };
+  };
+
+  const debouncedHandleChangeKeyEntered = debounce(handleChangeKeyEntered, 300);
+
   const handleRegisterKey = () => {
     if (!mainKeyEntered.trim()) {
       if (!isEmptyKey) {
@@ -215,7 +225,7 @@ const MainKey = () => {
             }}
           >
             <TextInput
-              onChangeText={handleChangeKeyEntered}
+              onChangeText={debouncedHandleChangeKeyEntered}
               label="Main Key*"
               mode="outlined"
             />
