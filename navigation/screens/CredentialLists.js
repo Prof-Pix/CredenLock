@@ -78,7 +78,7 @@ const CredentialLists = ({ navigation }) => {
                 onPress={() => {
                   navigation.reset({
                     index: 0,
-                    routes: [{ name: "Lists" }],
+                    routes: [{ name: "Credential Lists" }],
                   });
                 }}
               >

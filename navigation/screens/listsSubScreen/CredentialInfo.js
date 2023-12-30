@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import React, { useContext, useState, useEffect } from "react";
+import { View, Text, Pressable, StyleSheet, BackHandler } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Dialog, Button, TouchableRipple, Portal } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -21,6 +21,23 @@ const CredentialInfo = ({ route, navigation }) => {
   const copyToClipboard = async (textToCopy) => {
     await Clipboard.setStringAsync(textToCopy);
   };
+
+  useEffect(() => {
+    const backAction = () => {
+      // Do whatever you want before going back
+      // For example, navigate to CredentialLabel
+      console.log("clicked");
+      navigation.navigate("Credential Lists");
+      return true; // Prevent default behavior (exit the app)
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove(); // Remove the event listener on component unmount
+  }, [navigation]);
 
   return (
     <View
